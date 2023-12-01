@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<!-- saved from url=(0044)http://13.228.193.15/goog.html#goog_rewarded -->
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Display a GPT-managed rewarded ad." />
+    <title>Display a rewarded ad</title>
+    <script async="" src="./Display a rewarded ad_files/f.txt"></script>
+    <script>
+      window.googletag = window.googletag || { cmd: [] };
+
+      let rewardedSlot;
+      function start(url) {
+        googletag.cmd.push(() => {
+          rewardedSlot = googletag.defineOutOfPageSlot(
+            "/22639388115/rewarded_web_example",
+            googletag.enums.OutOfPageFormat.REWARDED
+          );
+
+          // Slot returns null if the page or device does not support rewarded ads.
+          if (rewardedSlot) {
+            rewardedSlot.addService(googletag.pubads());
+
+            timer = 0;
+            googletag
+              .pubads()
+              .addEventListener("rewardedSlotReady", (event) => {
+                timer = 1;
+                document.getElementById("watchAdButton").onclick = () => {
+                  event.makeRewardedVisible();
+                  displayModal();
+                };
+
+                displayModal(
+                  "reward",
+                  "Watch an ad to get access to this article?"
+                );
+              });
+
+            setTimeout(function () {
+              if (timer == 0) window.location.href = url;
+              //console.log('Delayed message');
+            }, 500);
+
+            googletag
+              .pubads()
+              .addEventListener("rewardedSlotClosed", dismissRewardedAd);
+
+            googletag
+              .pubads()
+              .addEventListener("rewardedSlotGranted", (event) => {
+                // Automatically close the ad by destroying the slot.
+                // Remove this to force the user to close the ad themselves.
+                //alert("HERE AGAIN");
+                dismissRewardedAd();
+
+                const reward = event.payload;
+                if (reward) {
+                  dismissRewardedAd();
+                  window.location.href = url;
+                }
+              });
+
+            googletag.enableServices();
+            googletag.display(rewardedSlot);
+          }
+        });
+      }
+      function dismissRewardedAd() {
+        displayModal();
+
+        if (rewardedSlot) {
+          googletag.destroySlots([rewardedSlot]);
+        }
+      }
+
+      function displayModal(type = "", message = "", url = "") {
+        const modal = document.getElementById("modal");
+        modal.removeAttribute("data-type");
+
+        if (type) {
+          document.getElementById("modalMessage").textContent = message;
+          modal.setAttribute("data-type", type);
+        }
+      }
+    </script>
+    <style>
+      .modal[data-type] {
+        display: block;
+      }
+
+      .modalDialog {
+        margin: auto;
+        padding: 25px;
+        background-color: white;
+        text-align: center;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .grantButtons,
+      .rewardButtons {
+        display: none;
+      }
+
+      .modal[data-type="grant"] .grantButtons,
+      .modal[data-type="reward"] .rewardButtons {
+        display: block;
+      }
+      .wrapper {
+        height: 100vh;
+        /* This part is important for centering the content */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* End center */
+        background: -webkit-linear-gradient(to right, #834d9b, #d04ed6);
+        background: linear-gradient(to right, #834d9b, #d04ed6);
+      }
+
+      .wrapper a {
+        display: inline-block;
+        text-decoration: none;
+        padding: 15px;
+        background-color: #fff;
+        border-radius: 3px;
+        text-transform: uppercase;
+        color: #585858;
+        font-family: "Roboto", sans-serif;
+      }
+
+      .modal {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(77, 77, 77, 0.7);
+        transition: all 0.4s;
+      }
+
+      .modal:target {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      .modal__content {
+        border-radius: 4px;
+        position: relative;
+        width: 500px;
+        max-width: 90%;
+        background: #fff;
+        padding: 1em 2em;
+      }
+
+      .modal__footer {
+        text-align: right;
+        a {
+          color: #585858;
+        }
+        i {
+          color: #d02d2c;
+        }
+      }
+      .modal__close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: #585858;
+        text-decoration: none;
+      }
+
+      .modal input[type="button"] {
+        padding: 0.5rem;
+        background: blue;
+        border: none;
+        border-radius: 4px;
+        margin: 4px;
+        color: white;
+      }
+    </style>
+    <style type="text/css" id="mytempCss">
+      ._2_e-g9 {
+        display: none;
+      }
+      ._2wQ56C._1h3i_z {
+        opacity: 0.01;
+      }
+    </style>
+  </head>
+  <body class="wrapper">
+    <div id="modal" class="modal">
+      <div class="modal__content">
+        <h1>Video</h1>
+
+        <p>Watch an ad to get access to this article? <br /></p>
+
+        <div class="modal__footer">
+          <button class="modal__btn modal__btn--ok">Yes</button>
+          <button class="modal__btn modal__btn--cancel">No</button>
+        </div>
+        <a href="#" class="modal__close">&times;</a>
+      </div>
+    </div>
+    <script>
+      googletag.cmd.push(function () {
+        // Register click event handlers.
+        document
+          .getElementById("closeButton")
+          .addEventListener("click", dismissRewardedAd);
+        document
+          .getElementById("noRewardButton")
+          .addEventListener("click", dismissRewardedAd);
+      });
+    </script>
+
+    <a class="abm" href="#modal">click to see article </a><br />
+
+    <script>
+      // Function to check if the user has visited more than 5 times in a day
+      function checkVisitCount() {
+        // Get the current date
+        var currentDate = new Date().toLocaleDateString();
+
+        // Retrieve visit count from localStorage
+        var visitCount = localStorage.getItem("visitCount");
+        var lastVisitDate = localStorage.getItem("lastVisitDate");
+
+        // If there's no stored date or the stored date is not the current date, reset the count
+        if (!lastVisitDate || lastVisitDate !== currentDate) {
+          visitCount = 0;
+        }
+
+        // Increment the visit count
+        visitCount = parseInt(visitCount) + 1;
+
+        // Update the localStorage with the new values
+        localStorage.setItem("visitCount", visitCount);
+        localStorage.setItem("lastVisitDate", currentDate);
+      }
+
+      // Call the function when the page loads article page onlu
+      threshold = 0;
+      visitcount = localStorage.getItem("visitCount");
+      if (visitcount == undefined) visitcount = 0;
+
+      //load this only when article pages is loaded
+      if (window.location.href.includes("article")) checkVisitCount();
+
+      if (visitcount >= threshold) {
+        var articleLinks = document.querySelectorAll('a[href*="article"]');
+
+        articleLinks.forEach(function (link) {
+          var elements = document.querySelectorAll(".abm");
+
+          // Add click event listener to each element
+          elements.forEach(function (element) {
+            element.addEventListener("click", function (event) {
+              // Prevent the default behavior of the link (e.g., navigating to a new page)
+              event.preventDefault();
+
+              // Your custom logic here
+              start(element.href);
+              // For example, you can log a message to the console
+              console.log('Link clicked with class "abm":', element.href);
+            });
+          });
+          console.log(link.href);
+        });
+      }
+    </script>
+  </body>
+</html>
